@@ -12,6 +12,10 @@ $params = ArrayHelper::merge(
 return [
     'name' => 'SeoKeys',
     'basePath' => dirname(__DIR__),
+    'aliases' => [
+        '@bower' => '@vendor/bower-asset',
+        '@npm'   => '@vendor/npm-asset',
+    ],
     'bootstrap' => [
         'log',
         'app\modules\admin\Bootstrap',

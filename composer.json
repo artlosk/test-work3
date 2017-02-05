@@ -29,13 +29,13 @@
 		"codeception/verify": "~0.3.1",
 		"codeception/specify": "~0.4.3"
 	},
+	"repositories": [
+		{
+			"type": "composer",
+			"url": "https://asset-packagist.org"
+		}
+	],
 	"config": {
 		"process-timeout": 1800
-	},
-	"extra": {
-		"asset-installer-paths": {
-			"npm-asset-library": "vendor/npm",
-			"bower-asset-library": "vendor/bower"
-		}
 	}
 }
