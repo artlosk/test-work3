@@ -13,5 +13,4 @@ modules:
         - Yii2:
             part: [orm, fixtures]
             entryScript: index-test.php
-            cleanup: true
             configFile: 'tests/_config/acceptance.php'
