@@ -23,13 +23,8 @@ class ProfileUpdateForm extends Model
     public function __construct(User $user, $config = [])
     {
         $this->_user = $user;
+        $this->email = $user->email;
         parent::__construct($config);
-    }
-
-    public function init()
-    {
-        $this->email = $this->_user->email;
-        parent::init();
     }
 
     public function rules()
