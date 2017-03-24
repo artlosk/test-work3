@@ -37,7 +37,7 @@ class SignupForm extends Model
         return [
             ['username', 'filter', 'filter' => 'trim'],
             ['username', 'required'],
-            ['username', 'match', 'pattern' => '#^[\w_-]+$#i'],
+            ['username', 'match', 'pattern' => '#^[\w_-]+$#is'],
             ['username', 'unique', 'targetClass' => User::className(), 'message' => Module::t('module', 'ERROR_USERNAME_EXISTS')],
             ['username', 'string', 'min' => 2, 'max' => 255],
 

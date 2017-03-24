@@ -55,7 +55,7 @@ class User extends ActiveRecord implements IdentityInterface
     {
         return [
             ['username', 'required'],
-            ['username', 'match', 'pattern' => '#^[\w_-]+$#i'],
+            ['username', 'match', 'pattern' => '#^[\w_-]+$#is'],
             ['username', 'unique', 'targetClass' => self::className(), 'message' => Module::t('module', 'ERROR_USERNAME_EXISTS')],
             ['username', 'string', 'min' => 2, 'max' => 255],
 
