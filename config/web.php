@@ -2,7 +2,7 @@
 
 $config = [
     'id' => 'app',
-    'language'=>'ru-RU',
+    'language' => 'ru-RU',
     'modules' => [
         'admin' => [
             'class' => 'app\modules\admin\Module',
@@ -13,6 +13,11 @@ $config = [
                     'controllerNamespace' => 'app\modules\user\controllers\backend',
                     'viewPath' => '@app/modules/user/views/backend',
                 ],
+                'employee' => [
+                    'class' => 'app\modules\employee\Module',
+                    'controllerNamespace' => 'app\modules\employee\controllers\backend',
+                    'viewPath' => '@app/modules/employee/views/backend',
+                ],
             ]
         ],
         'main' => [
@@ -22,6 +27,16 @@ $config = [
             'class' => 'app\modules\user\Module',
             'controllerNamespace' => 'app\modules\user\controllers\frontend',
             'viewPath' => '@app/modules/user/views/frontend',
+        ],
+        'employee' => [
+            'class' => 'app\modules\employee\Module',
+            'controllerNamespace' => 'app\modules\employee\controllers\frontend',
+            'viewPath' => '@app/modules/employee/views/frontend',
+        ],
+        'remote' => [
+            'class' => 'app\modules\remote\Module',
+            'controllerNamespace' => 'app\modules\remote\controllers\frontend',
+            'viewPath' => '@app/modules/remote/views/frontend',
         ],
     ],
     'components' => [

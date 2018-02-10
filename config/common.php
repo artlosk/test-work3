@@ -21,6 +21,8 @@ return [
         'app\modules\admin\Bootstrap',
         'app\modules\main\Bootstrap',
         'app\modules\user\Bootstrap',
+        'app\modules\employee\Bootstrap',
+        'app\modules\remote\Bootstrap',
     ],
     'components' => [
         'db' => [
