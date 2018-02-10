@@ -16,8 +16,34 @@ o личную информацию о сотруднике (отдел, ФИО,
 
 Сервера должны обмениваться информациеймежду собойпо RESTful.
 ```
+Screenshot
+------
+![alt tag](http://joxi.ru/Vm6ZVlxHxPgJqm)
+![alt tag](http://joxi.ru/52agVEzfG5VJQr)
+![alt tag](http://joxi.ru/8AnEjOouqeZdM2)
+Files change
+------
+![alt tags](http://joxi.ru/DmB8vqLiNDVDjA)
+```
 
-(http://joxi.ru/DmB8vqLiNDVDjA)
+http://test.work/admin/
+
+-----ADD data in admin-----
+http://test.work/admin/employee/employee
+http://test.work/admin/employee/department
+---------------------------
+http://test.work/remote/employees
+```
+
+
+Enter admin
+------
+```
+http://localhost/admin
+login: root
+pass: developer
+```
+
 
 Installation
 ------
