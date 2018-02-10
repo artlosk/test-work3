@@ -18,7 +18,7 @@ o личную информацию о сотруднике (отдел, ФИО,
 ```
 Screenshot
 ------
-![alt tag](http://joxi.ru/Vm6ZVlxHxPgJqm)
+![Screenshot](http://joxi.ru/Vm6ZVlxHxPgJqm)
 ![alt tag](http://joxi.ru/52agVEzfG5VJQr)
 ![alt tag](http://joxi.ru/8AnEjOouqeZdM2)
 Files change
