@@ -18,14 +18,19 @@ o личную информацию о сотруднике (отдел, ФИО,
 ```
 Screenshot
 ------
-![Screenshot](http://joxi.ru/Vm6ZVlxHxPgJqm)
-![alt tag](http://joxi.ru/52agVEzfG5VJQr)
-![alt tag](http://joxi.ru/8AnEjOouqeZdM2)
+http://joxi.ru/Vm6ZVlxHxPgJqm
+
+http://joxi.ru/52agVEzfG5VJQr
+
+http://joxi.ru/8AnEjOouqeZdM2
+
 Files change
 ------
-![alt tags](http://joxi.ru/DmB8vqLiNDVDjA)
-```
+http://joxi.ru/DmB8vqLiNDVDjA
 
+Links
+------
+```
 http://test.work/admin/
 
 -----ADD data in admin-----
