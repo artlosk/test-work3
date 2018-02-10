@@ -44,7 +44,7 @@ http://test.work/remote/employees
 Enter admin
 ------
 ```
-http://localhost/admin
+http://test.work/admin
 login: root
 pass: developer
 ```
