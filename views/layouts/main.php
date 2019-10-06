@@ -25,11 +25,7 @@ echo Nav::widget([
     'activateParents' => true,
     'items' => array_filter([
         ['label' => Yii::t('app', 'NAV_HOME'), 'url' => ['/main/default/index']],
-        ['label' => 'Модуль сотрудники', 'items' =>
-            [
-                ['label' => 'Форма поиска', 'url' => ['/remote/employees/index']],
-            ],
-        ],
+        ['label' => 'Модуль сесси', ['url' => ['/sessionDb/default/index']]],
         ['label' => Yii::t('app', 'NAV_CONTACT'), 'url' => ['/main/contact/index']],
         Yii::$app->user->isGuest ?
             ['label' => Yii::t('app', 'NAV_SIGNUP'), 'url' => ['/user/default/signup']] :

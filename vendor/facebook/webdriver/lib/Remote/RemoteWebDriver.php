@@ -15,6 +15,7 @@
 
 namespace Facebook\WebDriver\Remote;
 
+use Facebook\WebDriver\Chrome\ChromeOptions;
 use Facebook\WebDriver\Interactions\WebDriverActions;
 use Facebook\WebDriver\JavaScriptExecutor;
 use Facebook\WebDriver\WebDriver;
@@ -59,6 +60,11 @@ class RemoteWebDriver implements WebDriver, JavaScriptExecutor, WebDriverHasInpu
      */
     protected $executeMethod;
 
+    /**
+     * @param HttpCommandExecutor $commandExecutor
+     * @param string $sessionId
+     * @param WebDriverCapabilities|null $capabilities
+     */
     protected function __construct(
         HttpCommandExecutor $commandExecutor,
         $sessionId,
@@ -80,9 +86,9 @@ class RemoteWebDriver implements WebDriver, JavaScriptExecutor, WebDriverHasInpu
      * @param int|null $connection_timeout_in_ms Set timeout for the connect phase to remote Selenium WebDriver server
      * @param int|null $request_timeout_in_ms Set the maximum time of a request to remote Selenium WebDriver server
      * @param string|null $http_proxy The proxy to tunnel requests to the remote Selenium WebDriver through
-     * @param int|null $http_proxy_port The proxy  port to tunnel requests to the remote Selenium WebDriver through
+     * @param int|null $http_proxy_port The proxy port to tunnel requests to the remote Selenium WebDriver through
      * @param DesiredCapabilities $required_capabilities The required capabilities
-     * @return RemoteWebDriver
+     * @return static
      */
     public static function create(
         $selenium_server_url = 'http://localhost:4444/wd/hub',
@@ -96,6 +102,23 @@ class RemoteWebDriver implements WebDriver, JavaScriptExecutor, WebDriverHasInpu
         $selenium_server_url = preg_replace('#/+$#', '', $selenium_server_url);
 
         $desired_capabilities = self::castToDesiredCapabilitiesObject($desired_capabilities);
+
+        // Hotfix: W3C WebDriver protocol is not yet supported by php-webdriver, so we must force Chromedriver to
+        // not use the W3C protocol by default (which is what Chromedriver does starting with version 75).
+        if ($desired_capabilities->getBrowserName() === WebDriverBrowserType::CHROME
+            && mb_strpos($selenium_server_url, 'browserstack') === false // see https://github.com/facebook/php-webdriver/issues/644
+        ) {
+            $currentChromeOptions = $desired_capabilities->getCapability(ChromeOptions::CAPABILITY);
+            $chromeOptions = !empty($currentChromeOptions) ? $currentChromeOptions : new ChromeOptions();
+
+            if ($chromeOptions instanceof ChromeOptions && !isset($chromeOptions->toArray()['w3c'])) {
+                $chromeOptions->setExperimentalOption('w3c', false);
+            } elseif (is_array($chromeOptions) && !isset($chromeOptions['w3c'])) {
+                $chromeOptions['w3c'] = false;
+            }
+
+            $desired_capabilities->setCapability(ChromeOptions::CAPABILITY, $chromeOptions);
+        }
 
         $executor = new HttpCommandExecutor($selenium_server_url, $http_proxy, $http_proxy_port);
         if ($connection_timeout_in_ms !== null) {
@@ -127,38 +150,30 @@ class RemoteWebDriver implements WebDriver, JavaScriptExecutor, WebDriverHasInpu
     }
 
     /**
-     * Cast legacy types (array or null) to DesiredCapabilities object. To be removed in future when instance of
-     * DesiredCapabilities will be required.
-     *
-     * @param array|DesiredCapabilities|null $desired_capabilities
-     * @return DesiredCapabilities
-     */
-    protected static function castToDesiredCapabilitiesObject($desired_capabilities = null)
-    {
-        if ($desired_capabilities === null) {
-            return new DesiredCapabilities();
-        }
-
-        if (is_array($desired_capabilities)) {
-            return new DesiredCapabilities($desired_capabilities);
-        }
-
-        return $desired_capabilities;
-    }
-
-    /**
      * [Experimental] Construct the RemoteWebDriver by an existing session.
      *
      * This constructor can boost the performance a lot by reusing the same browser for the whole test suite.
-     * You cannot the desired capabilities because the session was created before.
+     * You cannot pass the desired capabilities because the session was created before.
      *
      * @param string $selenium_server_url The url of the remote Selenium WebDriver server
      * @param string $session_id The existing session id
-     * @return RemoteWebDriver
+     * @param int|null $connection_timeout_in_ms Set timeout for the connect phase to remote Selenium WebDriver server
+     * @param int|null $request_timeout_in_ms Set the maximum time of a request to remote Selenium WebDriver server
+     * @return static
      */
-    public static function createBySessionID($session_id, $selenium_server_url = 'http://localhost:4444/wd/hub')
-    {
+    public static function createBySessionID(
+        $session_id,
+        $selenium_server_url = 'http://localhost:4444/wd/hub',
+        $connection_timeout_in_ms = null,
+        $request_timeout_in_ms = null
+    ) {
         $executor = new HttpCommandExecutor($selenium_server_url);
+        if ($connection_timeout_in_ms !== null) {
+            $executor->setConnectionTimeout($connection_timeout_in_ms);
+        }
+        if ($request_timeout_in_ms !== null) {
+            $executor->setRequestTimeout($request_timeout_in_ms);
+        }
 
         return new static($executor, $session_id);
     }
@@ -294,32 +309,8 @@ class RemoteWebDriver implements WebDriver, JavaScriptExecutor, WebDriverHasInpu
     }
 
     /**
-     * Prepare arguments for JavaScript injection
-     *
-     * @param array $arguments
-     * @return array
-     */
-    private function prepareScriptArguments(array $arguments)
-    {
-        $args = [];
-        foreach ($arguments as $key => $value) {
-            if ($value instanceof WebDriverElement) {
-                $args[$key] = ['ELEMENT' => $value->getID()];
-            } else {
-                if (is_array($value)) {
-                    $value = $this->prepareScriptArguments($value);
-                }
-                $args[$key] = $value;
-            }
-        }
-
-        return $args;
-    }
-
-    /**
-     * Inject a snippet of JavaScript into the page for execution in the context
-     * of the currently selected frame. The executed script is assumed to be
-     * synchronous and the result of evaluating the script will be returned.
+     * Inject a snippet of JavaScript into the page for execution in the context of the currently selected frame.
+     * The executed script is assumed to be synchronous and the result of evaluating the script will be returned.
      *
      * @param string $script The script to inject.
      * @param array $arguments The arguments of the script.
@@ -336,13 +327,12 @@ class RemoteWebDriver implements WebDriver, JavaScriptExecutor, WebDriverHasInpu
     }
 
     /**
-     * Inject a snippet of JavaScript into the page for asynchronous execution in
-     * the context of the currently selected frame.
+     * Inject a snippet of JavaScript into the page for asynchronous execution in the context of the currently selected
+     * frame.
      *
-     * The driver will pass a callback as the last argument to the snippet, and
-     * block until the callback is invoked.
+     * The driver will pass a callback as the last argument to the snippet, and block until the callback is invoked.
      *
-     * @see WebDriverExecuteAsyncScriptTestCase
+     * You may need to define script timeout using `setScriptTimeout()` method of `WebDriverTimeouts` first.
      *
      * @param string $script The script to inject.
      * @param array $arguments The arguments of the script.
@@ -383,10 +373,11 @@ class RemoteWebDriver implements WebDriver, JavaScriptExecutor, WebDriverHasInpu
      * Construct a new WebDriverWait by the current WebDriver instance.
      * Sample usage:
      *
+     * ```
      *   $driver->wait(20, 1000)->until(
      *     WebDriverExpectedCondition::titleIs('WebDriver Page')
      *   );
-     *
+     * ```
      * @param int $timeout_in_second
      * @param int $interval_in_millisecond
      *
@@ -470,18 +461,6 @@ class RemoteWebDriver implements WebDriver, JavaScriptExecutor, WebDriverHasInpu
     }
 
     /**
-     * @return RemoteExecuteMethod
-     */
-    protected function getExecuteMethod()
-    {
-        if (!$this->executeMethod) {
-            $this->executeMethod = new RemoteExecuteMethod($this);
-        }
-
-        return $this->executeMethod;
-    }
-
-    /**
      * Construct a new action builder.
      *
      * @return WebDriverActions
@@ -489,17 +468,6 @@ class RemoteWebDriver implements WebDriver, JavaScriptExecutor, WebDriverHasInpu
     public function action()
     {
         return new WebDriverActions($this);
-    }
-
-    /**
-     * Return the WebDriverElement with the given id.
-     *
-     * @param string $id The id of the element to be created.
-     * @return RemoteWebElement
-     */
-    protected function newElement($id)
-    {
-        return new RemoteWebElement($this->getExecuteMethod(), $id);
     }
 
     /**
@@ -600,5 +568,71 @@ class RemoteWebDriver implements WebDriver, JavaScriptExecutor, WebDriverHasInpu
         }
 
         return null;
+    }
+
+    /**
+     * Prepare arguments for JavaScript injection
+     *
+     * @param array $arguments
+     * @return array
+     */
+    protected function prepareScriptArguments(array $arguments)
+    {
+        $args = [];
+        foreach ($arguments as $key => $value) {
+            if ($value instanceof WebDriverElement) {
+                $args[$key] = ['ELEMENT' => $value->getID()];
+            } else {
+                if (is_array($value)) {
+                    $value = $this->prepareScriptArguments($value);
+                }
+                $args[$key] = $value;
+            }
+        }
+
+        return $args;
+    }
+
+    /**
+     * @return RemoteExecuteMethod
+     */
+    protected function getExecuteMethod()
+    {
+        if (!$this->executeMethod) {
+            $this->executeMethod = new RemoteExecuteMethod($this);
+        }
+
+        return $this->executeMethod;
+    }
+
+    /**
+     * Return the WebDriverElement with the given id.
+     *
+     * @param string $id The id of the element to be created.
+     * @return RemoteWebElement
+     */
+    protected function newElement($id)
+    {
+        return new RemoteWebElement($this->getExecuteMethod(), $id);
+    }
+
+    /**
+     * Cast legacy types (array or null) to DesiredCapabilities object. To be removed in future when instance of
+     * DesiredCapabilities will be required.
+     *
+     * @param array|DesiredCapabilities|null $desired_capabilities
+     * @return DesiredCapabilities
+     */
+    protected static function castToDesiredCapabilitiesObject($desired_capabilities = null)
+    {
+        if ($desired_capabilities === null) {
+            return new DesiredCapabilities();
+        }
+
+        if (is_array($desired_capabilities)) {
+            return new DesiredCapabilities($desired_capabilities);
+        }
+
+        return $desired_capabilities;
     }
 }

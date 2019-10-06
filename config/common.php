@@ -14,7 +14,7 @@ return [
     'basePath' => dirname(__DIR__),
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
-        '@npm'   => '@vendor/npm-asset',
+        '@npm' => '@vendor/npm-asset',
     ],
     'bootstrap' => [
         'log',
@@ -23,6 +23,7 @@ return [
         'app\modules\user\Bootstrap',
         'app\modules\employee\Bootstrap',
         'app\modules\remote\Bootstrap',
+        'app\modules\sessionDb\Bootstrap',
     ],
     'components' => [
         'db' => [

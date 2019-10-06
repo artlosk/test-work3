@@ -38,6 +38,11 @@ $config = [
             'controllerNamespace' => 'app\modules\remote\controllers\frontend',
             'viewPath' => '@app/modules/remote/views/frontend',
         ],
+        'sessionDb' => [
+            'class' => 'app\modules\sessionDb\Module',
+            'controllerNamespace' => 'app\modules\sessionDb\controllers\frontend',
+            'viewPath' => '@app/modules/sessionDb/views/frontend',
+        ],
     ],
     'components' => [
         'user' => [

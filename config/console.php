@@ -8,5 +8,9 @@ return [
             'class' => 'app\modules\user\Module',
             'controllerNamespace' => 'app\modules\user\controllers\console',
         ],
+        'sessionDb' => [
+            'class' => 'app\modules\sessionDb\Module',
+            'controllerNamespace' => 'app\modules\sessionDb\controllers\console',
+        ]
     ],
 ];

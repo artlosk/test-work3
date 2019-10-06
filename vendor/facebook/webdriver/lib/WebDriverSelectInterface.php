@@ -1,4 +1,18 @@
 <?php
+// Copyright 2004-present Facebook. All Rights Reserved.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 namespace Facebook\WebDriver;
 
 use Facebook\WebDriver\Exception\NoSuchElementException;
@@ -27,8 +41,8 @@ interface WebDriverSelectInterface
     /**
      * @throws NoSuchElementException
      *
-     * @return WebDriverElement The first selected option in this select tag (or
-     *                          the currently selected option in a normal select)
+     * @return WebDriverElement The first selected option in this select tag (or the currently selected option in a
+     * normal select)
      */
     public function getFirstSelectedOption();
 
@@ -45,7 +59,7 @@ interface WebDriverSelectInterface
      * Select all options that have value attribute matching the argument. That is, when given "foo" this would
      * select an option like:
      *
-     * <option value="foo">Bar</option>;
+     * `<option value="foo">Bar</option>`
      *
      * @param string $value The value to match against.
      *
@@ -57,7 +71,7 @@ interface WebDriverSelectInterface
      * Select all options that display text matching the argument. That is, when given "Bar" this would
      * select an option like:
      *
-     * <option value="foo">Bar</option>;
+     * `<option value="foo">Bar</option>`
      *
      * @param string $text The visible text to match against.
      *
@@ -69,7 +83,7 @@ interface WebDriverSelectInterface
      * Select all options that display text partially matching the argument. That is, when given "Bar" this would
      * select an option like:
      *
-     * <option value="bar">Foo Bar Baz</option>;
+     * `<option value="bar">Foo Bar Baz</option>`
      *
      * @param string $text The visible text to match against.
      *
@@ -96,7 +110,7 @@ interface WebDriverSelectInterface
      * Deselect all options that have value attribute matching the argument. That is, when given "foo" this would
      * deselect an option like:
      *
-     * <option value="foo">Bar</option>;
+     * `<option value="foo">Bar</option>`
      *
      * @param string $value The value to match against.
      * @throws UnsupportedOperationException If the SELECT does not support multiple selections
@@ -107,7 +121,7 @@ interface WebDriverSelectInterface
      * Deselect all options that display text matching the argument. That is, when given "Bar" this would
      * deselect an option like:
      *
-     * <option value="foo">Bar</option>;
+     * `<option value="foo">Bar</option>`
      *
      * @param string $text The visible text to match against.
      * @throws UnsupportedOperationException If the SELECT does not support multiple selections
@@ -118,7 +132,7 @@ interface WebDriverSelectInterface
      * Deselect all options that display text matching the argument. That is, when given "Bar" this would
      * deselect an option like:
      *
-     * <option value="foo">Foo Bar Baz</option>;
+     * `<option value="foo">Foo Bar Baz</option>`
      *
      * @param string $text The visible text to match against.
      * @throws UnsupportedOperationException If the SELECT does not support multiple selections
